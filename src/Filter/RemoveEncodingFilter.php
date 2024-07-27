@@ -7,13 +7,13 @@ use Psr\Http\Message\ResponseInterface;
 
 class RemoveEncodingFilter implements FilterInterface
 {
-    const TRANSFER_ENCODING = 'transfer-encoding';
-    const CONTENT_ENCODING = 'content-encoding';
+    public const TRANSFER_ENCODING = 'transfer-encoding';
+    public const CONTENT_ENCODING = 'content-encoding';
 
     /**
      * @inheritdoc
      */
-    public function __invoke(RequestInterface $request, ResponseInterface $response, callable $next)
+    public function __invoke(RequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
         $response = $next($request, $response);
 

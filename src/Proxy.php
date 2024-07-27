@@ -3,7 +3,10 @@
 namespace Proxy;
 
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\ServerRequest;
+use Laminas\Diactoros\ServerRequestFactory;
 use Proxy\Adapter\AdapterInterface;
+use Proxy\Exception\RequestInitialiseException;
 use Proxy\Exception\UnexpectedValueException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,17 +19,17 @@ class Proxy
     /**
      * @var RequestInterface
      */
-    protected $request;
+    protected RequestInterface $request;
 
     /**
      * @var AdapterInterface
      */
-    protected $adapter;
+    protected AdapterInterface $adapter;
 
     /**
      * @var callable[]
      */
-    protected $filters = [];
+    protected array $filters = [];
 
     /**
      * @param AdapterInterface $adapter
@@ -39,30 +42,28 @@ class Proxy
     /**
      * Prepare the proxy to forward a request instance.
      *
-     * @param  RequestInterface $request
+     * @param RequestInterface $request
      * @return $this
      */
-    public function forward(RequestInterface $request)
+    public function forward(RequestInterface $request): static
     {
         $this->request = $request;
-
         return $this;
     }
 
     /**
      * Forward the request to the target url and return the response.
      *
-     * @param  string $target
-     * @throws UnexpectedValueException
-     * @return ResponseInterface
+     * @param string $targetUri
+     * @return ResponseInterface|null|RequestInitialiseException
      */
-    public function to($target)
+    public function to(string $targetUri): ResponseInterface|null|RequestInitialiseException
     {
-        if ($this->request === null) {
-            throw new UnexpectedValueException('Missing request instance.');
+        if (!isset($this->request)) {
+            throw new RequestInitialiseException('Request not initialized');
         }
 
-        $target = new Uri($target);
+        $target = new Uri($targetUri);
 
         // Overwrite target scheme, host and port.
         $uri = $this->request->getUri()
@@ -97,10 +98,10 @@ class Proxy
     /**
      * Add a filter middleware.
      *
-     * @param  callable $callable
+     * @param callable $callable
      * @return $this
      */
-    public function filter(callable $callable)
+    public function filter(callable $callable): static
     {
         $this->filters[] = $callable;
 
@@ -110,7 +111,7 @@ class Proxy
     /**
      * @return RequestInterface
      */
-    public function getRequest()
+    public function getRequest(): RequestInterface
     {
         return $this->request;
     }

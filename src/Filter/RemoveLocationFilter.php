@@ -7,12 +7,12 @@ use Psr\Http\Message\ResponseInterface;
 
 class RemoveLocationFilter implements FilterInterface
 {
-    const LOCATION = 'location';
+    public const LOCATION = 'location';
 
     /**
      * @inheritdoc
      */
-    public function __invoke(RequestInterface $request, ResponseInterface $response, callable $next)
+    public function __invoke(RequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
         $response = $next($request, $response);
 

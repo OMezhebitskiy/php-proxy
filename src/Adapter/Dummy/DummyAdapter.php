@@ -11,7 +11,7 @@ class DummyAdapter implements AdapterInterface
     /**
      * @inheritdoc
      */
-    public function send(RequestInterface $request)
+    public function send(RequestInterface $request): Response|\Psr\Http\Message\ResponseInterface
     {
         return new Response($request->getBody(), 200);
     }

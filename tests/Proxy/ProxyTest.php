@@ -4,6 +4,7 @@ namespace Proxy;
 
 use PHPUnit\Framework\TestCase;
 use Proxy\Adapter\Dummy\DummyAdapter;
+use Proxy\Exception\RequestInitialiseException;
 use Proxy\Exception\UnexpectedValueException;
 use Psr\Http\Message\RequestInterface;
 use Laminas\Diactoros\Request;
@@ -17,7 +18,7 @@ class ProxyTest extends TestCase
      */
     private $proxy;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->proxy = new Proxy(new DummyAdapter());
     }
@@ -28,6 +29,10 @@ class ProxyTest extends TestCase
      */
     public function to_throws_exception_if_no_request_is_given()
     {
+        $this->expectException(RequestInitialiseException::class);
+
+        $this->expectExceptionMessage('Request not initialized');
+
         $this->proxy->to('http://www.example.com');
     }
 
